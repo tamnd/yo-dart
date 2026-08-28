@@ -10,7 +10,7 @@ What is here is the error surface from `dx/15` §6 and the version contract: a s
 
 The typed collection API arrives with the native library, which the release train in `tamnd/yo` builds and vendors per platform once `M1` lands a record plane. Until then `dart test` passes and never opens a file.
 
-The version is `0.0.0` and it means what it says. This package is published so the name is held and the CI is real before either matters.
+The version is `0.0.1` and it means what it says. This package is published so the name is held and the CI is real before either matters.
 
 ## Requirements
 
