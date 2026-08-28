@@ -1,0 +1,36 @@
+# The recommended set, not the core set. A published package is held to the
+# stricter bar because its analyzer warnings become its users' analyzer
+# warnings, and a package that ships lint noise trains people to ignore lints in
+# their own code.
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # A missing return type or a dangling doc reference is a defect in a
+    # published API, not a style preference, so it fails the build rather than
+    # scrolling past in a log.
+    always_declare_return_types: error
+    comment_references: error
+    public_member_api_docs: error
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_dynamic_calls
+    - cancel_subscriptions
+    - close_sinks
+    - comment_references
+    - directives_ordering
+    - prefer_final_locals
+    - prefer_single_quotes
+    - public_member_api_docs
+    - require_trailing_commas
+    - sort_pub_dependencies
+    - throw_in_finally
+    - unawaited_futures
+    - unnecessary_lambdas
+    - use_super_parameters

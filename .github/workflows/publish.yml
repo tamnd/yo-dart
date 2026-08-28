@@ -1,0 +1,65 @@
+name: publish
+
+# Automated publishing to pub.dev, over OIDC. There is no PUB_CREDENTIALS in
+# this repository's secrets and there is not meant to be one.
+#
+# The reusable workflow exchanges the GitHub Actions identity token for a short
+# lived pub.dev credential, which is why the id-token permission below is the
+# whole of the configuration. A long lived publish token in a repository secret
+# is a credential that works from anywhere, forever, for anyone who reads it
+# once; this one works for this workflow, in this repository, for a few minutes.
+# dx/16 section 9 says CI does not use long lived tokens, and this is that rule
+# in its most literal form.
+#
+# Turn it on at pub.dev under Admin, Automated publishing, and point it at
+# tamnd/yo-dart with the tag pattern below.
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+", "v[0-9]+.[0-9]+.[0-9]+-*"]
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # The tag says one version and pubspec.yaml says another is the single most
+  # likely way to publish a release that claims to be something it is not. On
+  # pub.dev a version cannot be replaced, only retracted, so this check costs
+  # ten seconds and saves a permanent mistake.
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: the tag, the manifest and the library must agree
+        run: |
+          set -euo pipefail
+          tagged="${GITHUB_REF_NAME#v}"
+          manifest=$(grep -oE '^version: .+$' pubspec.yaml | cut -d' ' -f2)
+          declared=$(grep -oE "version = '[^']+'" lib/src/version.dart | head -1 | cut -d"'" -f2)
+          if [ "$tagged" != "$manifest" ]; then
+            echo "::error::tag says $tagged, pubspec.yaml says $manifest"
+            exit 1
+          fi
+          if [ "$tagged" != "$declared" ]; then
+            echo "::error::tag says $tagged, lib/src/version.dart says $declared"
+            exit 1
+          fi
+      - name: the changelog must mention it
+        run: |
+          set -euo pipefail
+          v="${GITHUB_REF_NAME#v}"
+          grep -q "## \[\?$v" CHANGELOG.md || {
+            echo "::error::CHANGELOG.md has no entry for $v"
+            exit 1
+          }
+
+  publish:
+    needs: verify
+    permissions:
+      id-token: write
+      contents: read
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1

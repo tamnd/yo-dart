@@ -1,0 +1,29 @@
+name: yodb
+description: Dart and Flutter client for yo, an embedded multi-model database in one file, where your own types are the schema and there is no query language.
+version: 0.0.0
+repository: https://github.com/tamnd/yo-dart
+issue_tracker: https://github.com/tamnd/yo-dart/issues
+homepage: https://yo.tamnd.dev
+
+# The floor is Dart 3.10, which is current minus three. That is looser than the
+# Swift binding's current minus one, on purpose: Dart ships quarterly, and a
+# Flutter app's SDK constraint is usually set by its oldest transitive
+# dependency rather than by its author. A tight floor here is not a strict
+# package, it is a resolution failure in someone else's pubspec.yaml.
+environment:
+  sdk: ^3.10.0
+
+# No Flutter dependency, and there will not be one in this file. package:yodb
+# imports nothing from Flutter so a server side Dart user running on shelf or
+# Dart Frog does not pull the SDK in. The lifecycle observer and the
+# path_provider helper live in package:yodb/flutter.dart, which arrives with the
+# engine and takes the dependency there.
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0
+
+topics:
+  - database
+  - storage
+  - ffi
+  - embedded

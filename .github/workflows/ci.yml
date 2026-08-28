@@ -1,0 +1,90 @@
+name: ci
+
+# Same rule as the engine's ci.yml: a pull request finds out in under three
+# minutes. A check slower than a context switch is a check people learn to
+# ignore, and that failure shows up as branches merged without waiting rather
+# than as red builds.
+#
+# The matrix runs the floor and stable. The floor is what a Flutter app with an
+# older transitive constraint actually resolves to, and it is the version that
+# breaks first when someone reaches for a newer language feature by habit.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Style and analysis first, so a run that is going to fail on formatting fails
+  # in thirty seconds instead of after the test matrix.
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: dart-lang/setup-dart@v1.8.0
+        with:
+          sdk: stable
+      - run: dart pub get
+      - name: format
+        run: dart format --output=none --set-exit-if-changed .
+      - name: analyze
+        run: dart analyze --fatal-infos
+
+  test:
+    name: test (dart ${{ matrix.sdk }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.10 is the floor declared in pubspec.yaml. If this job breaks then
+        # the floor moved and the manifest is lying about it.
+        sdk: ["3.10.0", "stable"]
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: dart-lang/setup-dart@v1.8.0
+        with:
+          sdk: ${{ matrix.sdk }}
+      - run: dart pub get
+      - run: dart test --reporter=github
+
+  # What pub.dev will say about this package, before pub.dev says it. The score
+  # is not vanity: a package that loses points for a missing example or an
+  # undocumented public member is a package that is harder to use, and finding
+  # out at publish time means finding out after the version is permanent.
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: dart-lang/setup-dart@v1.8.0
+        with:
+          sdk: stable
+      - run: dart pub get
+      - name: pana
+        run: |
+          dart pub global activate pana
+          dart pub global run pana --no-warning --exit-code-threshold 0 .
+
+  # A dry run of the real publish, on every pull request. Publishing is the one
+  # step in this repository that cannot be undone, so the validation runs
+  # constantly rather than once at the end.
+  publish-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: dart-lang/setup-dart@v1.8.0
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart pub publish --dry-run

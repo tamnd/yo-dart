@@ -1,0 +1,9 @@
+# LF in the repository and LF in the working tree, on every platform.
+# Dart source and the workflow files are compared byte for byte somewhere in CI,
+# and a checkout that rewrites line endings fails those comparisons for a reason
+# that is invisible in the diff.
+* text=auto eol=lf
+*.png binary
+*.so binary
+*.dylib binary
+*.dll binary
