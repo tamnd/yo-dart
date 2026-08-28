@@ -4,6 +4,13 @@ Every tier 1 and tier 2 SDK shares one version number with the engine, so a vers
 
 Pre 1.0 a minor release may break the API. When it does, the entry says so on its first line rather than in a note further down.
 
+## 0.0.1
+
+Still a name reservation. This release exists so that one version number means one artifact across every ecosystem on the same day, which it stopped meaning when the Node placeholder had to be republished to correct the sentence it was serving.
+
+- `Yodb.version` is `0.0.1`.
+- No API change, no behaviour change. There is still no database.
+
 ## 0.0.0
 
 The name reservation release. It holds `yodb` on pub.dev as a resolvable package and nothing more.

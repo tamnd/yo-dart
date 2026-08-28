@@ -15,7 +15,7 @@ abstract final class Yodb {
   /// Every tier 1 and tier 2 SDK shares one version number with the engine. A
   /// binding does not get its own version line, because a user asking "which
   /// yodb do I need for yo 1.4" is a question the project inflicted on itself.
-  static const String version = '0.0.0';
+  static const String version = '0.0.1';
 
   /// The C ABI version this package is built against.
   ///

@@ -1,6 +1,6 @@
 name: yodb
 description: Dart and Flutter client for yo, an embedded multi-model database in one file, where your own types are the schema and there is no query language.
-version: 0.0.0
+version: 0.0.1
 repository: https://github.com/tamnd/yo-dart
 issue_tracker: https://github.com/tamnd/yo-dart/issues
 homepage: https://yo.tamnd.dev
