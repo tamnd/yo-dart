@@ -4,6 +4,13 @@ Every tier 1 and tier 2 SDK shares one version number with the engine, so a vers
 
 Pre 1.0 a minor release may break the API. When it does, the entry says so on its first line rather than in a note further down.
 
+## 0.0.2
+
+Still a name reservation, and it moves because Swift's did. `tamnd/yo-swift` had no symbol that raised, so the sentence every other ecosystem carries existed nowhere in that package; fixing it needs a new tag, and §6 rule 1 says the new number is the same `0.0.x` in every ecosystem on the same day.
+
+- `Yodb.version` is `0.0.2`.
+- No API change, no behaviour change. There is still no database.
+
 ## 0.0.1
 
 Still a name reservation. This release exists so that one version number means one artifact across every ecosystem on the same day, which it stopped meaning when the Node placeholder had to be republished to correct the sentence it was serving.
